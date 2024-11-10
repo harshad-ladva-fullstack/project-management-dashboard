@@ -1,3 +1,5 @@
+"use client";
+
 import { z } from "zod";
 import { DottedSeparator } from "@/components/dotted-separator";
 import { Button } from "@/components/ui/button";
@@ -27,7 +29,7 @@ import { registerSchema } from "../schemas";
 import { useRegister } from "../api/use-register";
 
 export const SignUpCard = () => {
-  const { mutate } = useRegister();
+  const { mutate, isPending } = useRegister();
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -117,9 +119,9 @@ export const SignUpCard = () => {
               variant="primary"
               size="lg"
               className="w-full"
-              disabled={false}
+              disabled={isPending}
             >
-              Sign Up
+              Register
             </Button>
           </form>
         </Form>
