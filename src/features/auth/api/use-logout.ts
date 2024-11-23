@@ -3,6 +3,7 @@ import { InferResponseType } from "hono";
 
 import { client } from "@/lib/rpc";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type ResponseType = InferResponseType<(typeof client.api.auth.logout)["$post"]>;
 
@@ -13,12 +14,19 @@ export const useLogout = () => {
   return useMutation<ResponseType, Error>({
     mutationFn: async () => {
       const response = await client.api.auth.logout.$post();
-      const responseData: ResponseType = await response.json();
-      return responseData;
+      if (!response.ok) {
+        throw new Error("Failed to logout");
+      }
+      return await response.json();
     },
     onSuccess: () => {
+      toast.success("Logged out successfully");
       router.refresh();
       queryClient.invalidateQueries({ queryKey: ["current"] });
+    },
+    onError: () => {
+      toast.error("Failed to logout");
+      console.error("Failed to logout");
     },
   });
 };
